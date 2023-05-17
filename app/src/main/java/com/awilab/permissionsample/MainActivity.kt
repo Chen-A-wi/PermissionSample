@@ -1,6 +1,5 @@
 package com.awilab.permissionsample
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 
 class MainActivity : BaseActivity() {
