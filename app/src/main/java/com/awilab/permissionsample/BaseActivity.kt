@@ -7,6 +7,9 @@ import android.Manifest.permission.READ_MEDIA_AUDIO
 import android.Manifest.permission.READ_MEDIA_IMAGES
 import android.Manifest.permission.READ_MEDIA_VIDEO
 import android.Manifest.permission.READ_PHONE_STATE
+import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+import android.os.Bundle
+import android.os.PersistableBundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.permissionx.guolindev.PermissionX
@@ -24,24 +27,21 @@ open class BaseActivity : AppCompatActivity() {
         READ_MEDIA_AUDIO
     )
 
-    override fun onResume() {
-        super.onResume()
+    override fun onStart() {
+        super.onStart()
 
-        requestPermission()
+        requestPermissionX()
     }
 
     private fun getAPIPermissions(): List<String> {
-        return if (DeviceSDK.isAfter33) {
-            permissions.removeAll(
+        permissions.removeAll(
+            if (DeviceSDK.isAfter33) {
                 setOf(
                     MANAGE_EXTERNAL_STORAGE,
                     READ_EXTERNAL_STORAGE,
                     MANAGE_EXTERNAL_STORAGE
                 )
-            )
-            permissions.toList()
-        } else if (DeviceSDK.isAfter30) {
-            permissions.removeAll(
+            } else if (DeviceSDK.isAfter30) {
                 setOf(
                     READ_MEDIA_AUDIO,
                     READ_MEDIA_IMAGES,
@@ -49,26 +49,25 @@ open class BaseActivity : AppCompatActivity() {
                     READ_EXTERNAL_STORAGE,
                     MANAGE_EXTERNAL_STORAGE
                 )
-            )
-            permissions.toList()
-        } else {
-            permissions.removeAll(
+            } else {
                 setOf(
                     READ_MEDIA_AUDIO,
                     READ_MEDIA_IMAGES,
                     READ_MEDIA_VIDEO,
                     MANAGE_EXTERNAL_STORAGE,
                 )
-            )
-            permissions.toList()
-        }
+            }
+        )
+
+        return permissions.toList()
     }
 
+    //region PermissionX
     private fun getPermissionBuild(): PermissionBuilder {
         return PermissionX.init(this).permissions(getAPIPermissions())
     }
 
-    private fun requestPermission() {
+    private fun requestPermissionX() {
         getPermissionBuild().request { allGranted, grantedList, deniedList ->
             if (allGranted) {
                 Toast.makeText(this, "All permissions are granted", Toast.LENGTH_LONG).show()
@@ -81,4 +80,5 @@ open class BaseActivity : AppCompatActivity() {
             }
         }
     }
+    //endregion
 }
